@@ -1158,6 +1158,38 @@ inline std::complex<float> cyl_hankel_1(float v, std::complex<float> z) {
     return static_cast<std::complex<float>>(cyl_hankel_1(static_cast<double>(v), static_cast<std::complex<double>>(z)));
 }
 
+inline void cyl_hankel_1_all(double v, std::complex<double> z, std::size_t n, std::complex<double> *cy) {
+    int kode = 1;
+    int m = 1;
+    int nz, ierr;
+    int sign = 1;
+
+    if (std::isnan(v) || std::isnan(z.real()) || std::isnan(z.imag())) {
+        for (std::size_t i = 0; i < n; ++i) {
+            cy[i].real(NAN);
+            cy[i].imag(NAN);
+        }
+        return;
+    }
+    if (v < 0) {
+        v = -v;
+        sign = -1;
+    }
+    nz = amos::besh(z, v, kode, m, n, cy, &ierr);
+    set_error_and_nan("hankel1:", ierr_to_sferr(nz, ierr), cy[0]);
+    if (sign == -1) {
+        for (std::size_t i = 0; i < n; ++i) {
+            cy[i] = detail::rotate(cy[i], v);
+        }
+    }
+}
+
+inline void cyl_hankel_1_all(float v, std::complex<float> z, std::size_t n, std::complex<float> *cy) {
+    cyl_hankel_1_all(
+        static_cast<double>(v), static_cast<std::complex<double>>(z), n, reinterpret_cast<std::complex<double> *>(cy)
+    );
+}
+
 inline std::complex<double> cyl_hankel_2(double v, std::complex<double> z) {
     int n = 1;
     int kode = 1;

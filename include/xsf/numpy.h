@@ -240,6 +240,8 @@ namespace numpy {
     using ddd_d = double (*)(double, double, double);
     using Flf_F = cfloat (*)(cfloat, long int, float);
     using Dld_D = cdouble (*)(cdouble, long int, double);
+    using dDi_D1 = void (*)(double, cdouble, int, cdouble_1d);
+    using fFi_F1 = void (*)(float, cfloat, int, cfloat_1d);
 
     // 3 inputs, 2 outputs
     using fff_ff = void (*)(float, float, float, float &, float &);

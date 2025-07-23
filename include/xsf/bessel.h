@@ -1175,6 +1175,7 @@ inline void cyl_hankel_1_all(T v, std::complex<T> z, int n, OutputVec cy) {
         return;
     }
 
+    // TODO: what do we want here? Atm v < 0 case is handled in python
     if (v < 0) {
         v = -v;
         sign = -1;

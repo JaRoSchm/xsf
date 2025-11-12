@@ -1158,6 +1158,45 @@ inline std::complex<float> cyl_hankel_1(float v, std::complex<float> z) {
     return static_cast<std::complex<float>>(cyl_hankel_1(static_cast<double>(v), static_cast<std::complex<double>>(z)));
 }
 
+// template <typename OutputVec>
+// inline void cyl_hankel_1_all(double v, std::complex<double> z, int n, OutputVec cy) {
+template <typename T, typename OutputVec>
+inline void cyl_hankel_1_all(T v, std::complex<T> z, int n, OutputVec cy) {
+    int kode = 1;
+    int m = 1;
+    int nz, ierr;
+    int sign = 1;
+
+    if (std::isnan(v) || std::isnan(z.real()) || std::isnan(z.imag())) {
+        for (int i = 0; i < cy.extent(0); ++i) {
+            cy[i].real(NAN);
+            cy[i].imag(NAN);
+        }
+        return;
+    }
+
+    // TODO: what do we want here? Atm v < 0 case is handled in python
+    if (v < 0) {
+        v = -v;
+        sign = -1;
+    }
+
+    // cast v, z, and cy.data_handle() to double
+    double dv = static_cast<double>(v);
+    std::complex<double> dz = static_cast<std::complex<double>>(z);
+    std::complex<double> *cy_ptr = reinterpret_cast<std::complex<double> *>(cy.data_handle());
+
+    // nz = amos::besh(z, v, kode, m, n, cy.data_handle(), &ierr);
+    nz = amos::besh(dz, dv, kode, m, n, cy_ptr, &ierr);
+    set_error_and_nan("hankel1:", ierr_to_sferr(nz, ierr), cy[0]);
+    if (sign == -1) {
+        for (int i = 0; i < n; ++i) {
+            // cy[i] = detail::rotate(cy[i], v);
+            cy_ptr[i] = detail::rotate(cy_ptr[i], dv);
+        }
+    }
+}
+
 inline std::complex<double> cyl_hankel_2(double v, std::complex<double> z) {
     int n = 1;
     int kode = 1;
